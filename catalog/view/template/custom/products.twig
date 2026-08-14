@@ -1,0 +1,35 @@
+<section class="peptoply-product-section pt-4 pt-md-5 pb-0">
+  <div class="peptoply-container">
+    <h2 class="mb-md-5 mb-4">Product Range</h2>
+    <div class="swiper peptoply-product-swiper">
+      <div class="swiper-wrapper">
+        {% for product in products %}
+          <div class="swiper-slide">
+            <div class="peptoply-card">
+               <a href="{{ product.href }}">
+              <div class="img-box">
+                <img src="{{ product.thumb }}" alt="{{ product.name }}" class="img-fluid">
+              </div>
+               </a>
+              <div class="peptoply-content">
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.price }}</p>
+                <a href="{{ product.href }}" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold">Buy now</a>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="col-12 text-center">
+            <p>No products found in this category.</p>
+          </div>
+        {% endfor %}
+      </div>
+      <!-- Optional navigation buttons -->
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+
+      <!-- Optional pagination dots -->
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>

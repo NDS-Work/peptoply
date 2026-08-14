@@ -1,0 +1,140 @@
+</main>
+<div id="gst-global-loader" style="display: none !important;">
+    <div class="gst-spinner"></div>
+</div>
+
+<style>
+#gst-global-loader {
+    display: none; /* 🔥 MUST be none initially */
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.7);
+    z-index: 9999;
+
+    /* flex only when shown */
+    align-items: center;
+    justify-content: center;
+}
+
+#gst-global-loader.active {
+    display: flex; /* 🔥 ONLY when active */
+}
+
+.gst-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+  function showGSTLoader() {
+    $('#gst-global-loader').addClass('active');
+}
+
+function hideGSTLoader() {
+    $('#gst-global-loader').removeClass('active');
+}
+  </script>
+<footer class="peptoply-footer pt-md-5 pt-4 mt-md-5 mt-4 pb-3">
+  <div class="container">
+    <div class="row gy-4 align-items-start justify-content-between pb-md-4">
+      
+      <!-- Logo & Social -->
+      <div class="col-12 col-lg-4">
+        <div class="logo-box">
+          <a href="{{ home }}" class="footer-logo d-block mb-3">
+            <img src="{{ base }}image/catalog/peptoply/peptoply-logo.svg" alt="{{ config_name }} logo" class="img-fluid w-100">
+          </a>
+          <div class="d-flex gap-md-4 gap-3 mt-md-5 mt-4">
+            <!-- <a href="https://twitter.com/peptoply" class="icon" target="_blank" rel="noopener" aria-label="Twitter"><i class="fa-brands fa-twitter fa-lg"></i></a> -->
+            <a href="https://facebook.com/peptoply" class="icon" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f fa-lg"></i></a>
+            <a href="https://instagram.com/peptoply" class="icon" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram fa-lg"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-6 col-lg-2">
+        <h6 class="mb-3 fw-bold">Quick links</h6>
+        <ul class="list-unstyled">
+          {% for info in informations %}
+            {% if info.href %}
+              <li><a href="{{ info.href }}" class="footer-link">{{ info.title }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Products (remove this entire block if you don't want it) -->
+      <div class="col-6 col-lg-2">
+        <h6 class="mb-3 fw-bold">Products</h6>
+        <ul class="list-unstyled">
+          {% for product in footer_products %}
+            <li><a href="{{ product.href }}" class="footer-link">{{ product.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Contact Us -->
+      <div class="col-12 col-lg-4">
+        <h6 class="mb-3 fw-bold">Contact us</h6>
+        <ul class="list-unstyled footer-contact text-break">
+          {% if store_phone %}
+            <li class="mb-2"><i class="fa-solid fa-phone me-2"></i> <a href="tel:{{ store_phone }}" class="footer-link">{{ store_phone }}</a> </li>
+          {% endif %}
+          {% if store_email %}
+            <li class="mb-2"><i class="fa-solid fa-envelope me-2"></i>
+              <a href="mailto:{{ store_email }}" class="footer-link">{{ store_email }}</a>
+            </li>
+          {% endif %}
+          {% if store_address %}
+            <li><i class="fa-solid fa-location-dot me-2"></i> {{ store_address|raw }}</li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+
+    <hr class="my-md-3 my-1">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 pt-2 small text-muted">
+      <div>
+        © {{ "now"|date("Y") }} {{ config_name }} | Website by 
+        <a href="https://nds.studio/" class="text-muted" target="_blank" rel="noopener">nDimensions</a>
+      </div>
+      <div>
+        {% if privacy_policy %}
+          <a href="{{ privacy_policy }}" class="me-3 text-muted">Privacy Policy</a>
+        {% endif %}
+        {% if terms %}
+          <a href="{{ terms }}" class="text-muted">Terms & Conditions</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="floating">
+  <ul class="list-unstyled mb-0">
+    <li class="mb-2">
+      <a class="whatsapp-float" href="https://wa.me/919650750730?text=Hello%20I%20am%20interested%20in%20your%20product" class="icon" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp fa-lg"></i></a>
+      <!-- <a href="https://wa.me/{{ store_phone|replace({'+':'',' ':'','-':''}) }}?text=Hello%20I%20am%20interested%20in%20your%20product" class="icon" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp fa-lg"></i></a> -->
+    </li>
+    <li><a class="phone-float" href="tel:{{ store_phone }}" class="icon" aria-label="Call"><i class="fa-solid fa-phone fa-lg"></i></a></li>
+  </ul>
+</div>
+
+</div>
+{{ cookie }}
+<script src="{{ bootstrap }}" type="text/javascript"></script>
+{% for script in scripts %}
+  <script src="{{ script.href }}" type="text/javascript"></script>
+{% endfor %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+</body></html>

@@ -1,0 +1,503 @@
+<fieldset id="shipping-address">
+  <legend>{{ heading_title }}</legend>
+
+  <!-- 🚀 Card-based selector for existing/new shipping address -->
+  <div id="shipping-addresses" style="display: {% if addresses %}block{% else %}none{% endif %};">
+    <div class="row g-3">
+      <!-- Existing Address Card -->
+      <div class="col-md-12">
+        <div class="card h-100 shadow-sm border border-2 {% if addresses %}border-primary bg-light{% endif %} shipping-option"
+             data-value="1"
+             id="card-shipping-existing"
+             style="cursor: pointer;">
+          <div class="card-body py-3 d-flex align-items-center">
+            <i class="fa-solid fa-house me-2 text-primary"></i>
+            <h6 class="card-title mb-0">{{ text_address_existing }}</h6>
+          </div>
+            <!-- 🏠 Existing Address -->
+  <div id="shipping-existing" style="display: {% if addresses %}block{% else %}none{% endif %};" class="px-3 pb-3 pt-1">
+    <select name="address_id" id="input-shipping-address" class="form-select">
+      <option value="">{{ text_select }}</option>
+      {% for address in addresses %}
+        <option value="{{ address.address_id }}"{% if address.address_id == address_id %} selected{% endif %}>
+          {{ address.firstname }} {{ address.lastname }}
+          {% if address.company %}, {{ address.company }}{% endif %},
+          {{ address.address_1 }}, {{ address.city }}, {{ address.zone }}, {{ address.country }}
+        </option>
+      {% endfor %}
+    </select>
+    <div id="error-shipping-address" class="invalid-feedback"></div>
+  </div>
+        </div>
+        <input type="radio" name="shipping_existing" value="1" id="input-shipping-existing"
+               class="d-none"{% if addresses %} checked{% endif %}/>
+      </div>
+
+      <!-- New Address Card -->
+      <div class="col-md-12">
+        <div class="card h-100 shadow-sm border border-2 {% if not addresses %}border-primary bg-light{% endif %} shipping-option"
+             data-value="0"
+             id="card-shipping-new"
+             style="cursor: pointer;">
+          <div class="card-body py-3 d-flex align-items-center">
+            <i class="fa-solid fa-plus-circle me-2 text-primary"></i>
+            <h6 class="card-title mb-0">{{ text_address_new }}</h6>
+          </div>
+        </div>
+        <input type="radio" name="shipping_existing" value="0" id="input-shipping-new"
+               class="d-none"{% if not addresses %} checked{% endif %}/>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🆕 New Address -->
+  <div id="shipping-new" style="display: {% if not addresses %}block{% else %}none{% endif %};">
+    <form id="form-shipping-address">
+      <div class="row row-cols-1 row-cols-md-2">
+        <div class="col mb-3 required">
+          <label for="input-shipping-firstname" class="form-label">{{ entry_firstname }}</label>
+          <input type="text" name="firstname" value="{{ firstname }}" placeholder="{{ entry_firstname }}" id="input-shipping-firstname" class="form-control"/>
+          <div id="error-shipping-firstname" class="invalid-feedback"></div>
+        </div>
+
+        <div class="col mb-3 required">
+          <label for="input-shipping-lastname" class="form-label">{{ entry_lastname }}</label>
+          <input type="text" name="lastname" value="{{ lastname }}" placeholder="{{ entry_lastname }}" id="input-shipping-lastname" class="form-control"/>
+          <div id="error-shipping-lastname" class="invalid-feedback"></div>
+        </div>
+
+        <div class="col mb-3">
+          <label for="input-shipping-company" class="form-label">{{ entry_company }}</label>
+          <input type="text" name="company" value="" placeholder="{{ entry_company }}" id="input-shipping-company" class="form-control"/>
+        </div>
+
+        <div class="col mb-3 required">
+          <label for="input-shipping-address-1" class="form-label">{{ entry_address_1 }}</label>
+          <input type="text" name="address_1" value="" placeholder="{{ entry_address_1 }}" id="input-shipping-address-1" class="form-control"/>
+          <div id="error-shipping-address-1" class="invalid-feedback"></div>
+        </div>
+
+        <div class="col mb-3">
+          <label for="input-shipping-address-2" class="form-label">{{ entry_address_2 }}</label>
+          <input type="text" name="address_2" value="" placeholder="{{ entry_address_2 }}" id="input-shipping-address-2" class="form-control"/>
+        </div>
+
+        <div class="col mb-3 required">
+          <label for="input-shipping-city" class="form-label">{{ entry_city }}</label>
+          <select name="city" id="input-shipping-city" class="form-select">
+            <option value="">-- Select City --</option>
+            <option value="Delhi">Delhi</option>
+            <option value="Noida">Noida</option>
+            <option value="Greater Noida">Greater Noida</option>
+            <option value="Ghaziabad">Ghaziabad</option>
+            <option value="Gurugram">Gurugram</option>
+            <option value="Faridabad">Faridabad</option>
+            <option value="Bahadurgarh">Bahadurgarh</option>
+            <option value="Sonipat">Sonipat</option>
+          </select>
+          <div id="error-shipping-city" class="invalid-feedback"></div>
+        </div>
+
+        <div class="col mb-3 required">
+          <label for="input-shipping-postcode" class="form-label">{{ entry_postcode }}</label>
+          <input type="text" name="postcode" value="{{ postcode }}" placeholder="{{ entry_postcode }}" id="input-shipping-postcode" class="form-control"/>
+          <div id="error-shipping-postcode" class="invalid-feedback"></div>
+        </div>
+
+        <div class="col mb-3 required d-none">
+          <label for="input-shipping-country" class="form-label">{{ entry_country }}</label>
+          <select name="country_id" id="input-shipping-country" class="form-select" disabled>
+            <option value="0">{{ text_select }}</option>
+            <option value="99" selected>India</option>
+          </select>
+          <div id="error-shipping-country" class="invalid-feedback"></div>
+        </div>
+
+        <div class="col mb-3 required">
+          <label for="input-shipping-zone" class="form-label">{{ entry_zone }}</label>
+          <select name="zone_id" id="input-shipping-zone" class="form-select">
+            <option value="">{{ text_select }}</option>
+            <option value="1483">Delhi</option>
+            <option value="1486">Haryana</option>
+            <option value="1505">Uttar Pradesh</option>
+          </select>
+          <div id="error-shipping-zone" class="invalid-feedback"></div>
+        </div>
+
+        {% for custom_field in custom_fields %}
+          {% if custom_field.custom_field_id != 31 and custom_field.custom_field_id != 32 %}
+            {% if custom_field.type == 'text' %}
+              <div class="col mb-3{% if custom_field.required %} required{% endif %}">
+                <label for="input-shipping-custom-field-{{ custom_field.custom_field_id }}" class="form-label">{{ custom_field.name }}</label>
+                <input type="text" name="custom_field[{{ custom_field.custom_field_id }}]" value="{{ custom_field.value }}" placeholder="{{ custom_field.name }}" id="input-shipping-custom-field-{{ custom_field.custom_field_id }}" class="form-control"/>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="text-end mb-3">
+        <button type="button" id="button-shipping-address-close" class="btn btn-light me-2">Close</button>
+        <button type="submit" id="button-shipping-address" class="btn btn-primary">{{ button_continue }}</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ✅ Same as billing checkbox — always visible -->
+  <div class="my-3 form-check">
+    <input type="checkbox" class="form-check-input" id="same-as-billing" checked>
+    <label class="form-check-label fw-semibold" for="same-as-billing">
+      Use Same Address for Billing
+    </label>
+  </div>
+
+</fieldset>
+
+<script type="text/javascript"><!--
+$('input[name=\'shipping_existing\']').on('change', function() {
+    if ($(this).val() == 1) {
+        $('#shipping-existing').show();
+        $('#shipping-new').hide();
+    } else {
+        $('#shipping-existing').hide();
+        $('#shipping-new').show();
+    }
+});
+
+// Existing Shipping Address
+$('#input-shipping-address').on('change', function() {
+    var element = this;
+
+    chain.attach(function() {
+        return $.ajax({
+            url: 'index.php?route=checkout/shipping_address.address&language={{ language }}&address_id=' + $(element).val(),
+            dataType: 'json',
+            beforeSend: function() {
+                $(element).prop('disabled', true);
+            },
+            complete: function() {
+                $(element).prop('disabled', false);
+            },
+            success: function(json) {
+                console.log(json);
+
+                $('#input-shipping-address').removeClass('is-invalid');
+                $('#error-shipping-address').removeClass('d-block');
+
+                if (json['redirect']) {
+                    location = json['redirect'];
+                }
+
+                if (json['error']) {
+                    $('#input-shipping-address').addClass('is-invalid');
+                    $('#error-shipping-address').html(json['error']).addClass('d-block');
+                }
+
+                if (json['success']) {
+                    $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+
+                    $('#input-shipping-method').val('');
+                    $('#input-payment-method').val('');
+
+                    if ($('#checkout-shipping-method').length) {
+                        $('#checkout-shipping-method').load('index.php?route=checkout/shipping_method&language={{ language }}');
+                    }
+
+                    $('#checkout-confirm').load('index.php?route=checkout/confirm.confirm&language={{ language }}');
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+});
+
+// New Shipping Address
+$('#form-shipping-address').on('submit', function(e) {
+    e.preventDefault();
+
+    chain.attach(function() {
+        return $.ajax({
+            url: 'index.php?route=checkout/shipping_address.save&language={{ language }}',
+            type: 'post',
+            data: $('#form-shipping-address').serialize(),
+            dataType: 'json',
+            contentType: 'application/x-www-form-urlencoded',
+            beforeSend: function() {
+                $('#button-shipping-address').button('loading');
+            },
+            complete: function() {
+                $('#button-shipping-address').button('reset');
+            },
+            success: function(json) {
+                console.log(json);
+
+                $('#form-shipping-address').find('.is-invalid').removeClass('is-invalid');
+                $('#form-shipping-address').find('.invalid-feedback').removeClass('d-block');
+
+                if (json['redirect']) {
+                    location = json['redirect'];
+                }
+
+                if (json['error']) {
+                    if (json['error']['warning']) {
+                        $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                    }
+
+                    for (i in json['error']) {
+                        for (key in json['error']) {
+                            $('#input-shipping-' + key.replaceAll('_', '-')).addClass('is-invalid').find('.form-control, .form-select, .form-check-input, .form-check-label').addClass('is-invalid');
+                            $('#error-shipping-' + key.replaceAll('_', '-')).html(json['error'][key]).addClass('d-block');
+                        }
+                    }
+                }
+
+                if (json['success']) {
+                    $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+
+                    $('#form-shipping-address')[0].reset();
+
+                    var html = '<option value="">{{ text_select|escape('js') }}</option>';
+
+                    if (json['addresses']) {
+                        for (i in json['addresses']) {
+                            html += '<option value="' + json['addresses'][i]['address_id'] + '">' + json['addresses'][i]['firstname'] + ' ' + json['addresses'][i]['lastname'] + ', ' + (json['addresses'][i]['company'] ? json['addresses'][i]['company'] + ', ' : '') + json['addresses'][i]['address_1'] + ', ' + json['addresses'][i]['city'] + ', ' + json['addresses'][i]['zone'] + ', ' + json['addresses'][i]['country'] + '</option>';
+                        }
+                    }
+
+                    // Shipping Address
+                    $('#input-shipping-address').html(html);
+
+                    $('#input-shipping-address').val(json['address_id']);
+
+                    $('#shipping-addresses').css({display: 'block'});
+
+                    $('#input-shipping-existing').trigger('click');
+
+                    // Payment Address
+                    var payment_address_id = $('#input-payment-address').val();
+
+                    $('#input-payment-address').html(html);
+
+                    if (payment_address_id) {
+                        $('#input-payment-address').val(payment_address_id);
+                    }
+
+                    $('#payment-addresses').css({display: 'block'});
+
+                    $('#input-payment-existing').trigger('click');
+
+                    $('#payment-address').removeClass('no-address');
+
+                    $('#input-shipping-method').val('');
+                    $('#input-payment-method').val('');
+
+                    if ($('#checkout-shipping-method').length) {
+                        $('#checkout-shipping-method').load('index.php?route=checkout/shipping_method&language={{ language }}');
+                    }
+
+                    $('#checkout-confirm').load('index.php?route=checkout/confirm.confirm&language={{ language }}');
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+});
+
+$('#input-shipping-country').on('change', function() {
+    var element = this;
+
+    chain.attach(function() {
+        return $.ajax({
+            url: 'index.php?route=localisation/country&language={{ language }}&country_id=' + $('#input-shipping-country').val(),
+            dataType: 'json',
+            beforeSend: function() {
+                $(element).prop('disabled', true);
+                $('#input-shipping-zone').prop('disabled', true);
+            },
+            complete: function() {
+                $(element).prop('disabled', false);
+                $('#input-shipping-zone').prop('disabled', false);
+            },
+            success: function(json) {
+                if (json['postcode_required'] == '1') {
+                    $('#input-shipping-postcode').parent().addClass('required');
+                } else {
+                    $('#input-shipping-postcode').parent().removeClass('required');
+                }
+
+                html = '<option value="">{{ text_select|escape('js') }}</option>';
+
+                if (json['zone'] && json['zone'] != '') {
+                    for (i = 0; i < json['zone'].length; i++) {
+                        html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+
+                        if (json['zone'][i]['zone_id'] == '{{ zone_id }}') {
+                            html += ' selected';
+                        }
+
+                        html += '>' + json['zone'][i]['name'] + '</option>';
+                    }
+                } else {
+                    html += '<option value="0" selected>{{ text_none|escape('js') }}</option>';
+                }
+
+                $('#input-shipping-zone').html(html);
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+});
+//--></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const citySelect = document.getElementById("input-shipping-city");
+    const stateSelect = document.getElementById("input-shipping-zone");
+
+    citySelect.addEventListener("change", function() {
+        let city = this.value;
+        let state = "";
+
+        if (["Delhi"].includes(city)) {
+            state = "Delhi";
+        } else if (["Noida","Greater Noida","Ghaziabad"].includes(city)) {
+            state = "Uttar Pradesh";
+        } else if (["Gurugram","Faridabad","Bahadurgarh","Sonipat"].includes(city)) {
+            state = "Haryana";
+        }
+
+        for (let opt of stateSelect.options) {
+            if (opt.text === state || opt.value === state) {
+                opt.selected = true;
+                break;
+            }
+        }
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sameAsBillingCheckbox = document.getElementById('same-as-billing');
+    const billingAddressBlock = document.getElementById('payment-address');
+
+    // Show/hide billing block based on checkbox
+    function toggleBilling() {
+        if (sameAsBillingCheckbox.checked) {
+            billingAddressBlock.style.display = 'none';
+        } else {
+            billingAddressBlock.style.display = 'block';
+        }
+    }
+
+    if (sameAsBillingCheckbox && billingAddressBlock) {
+        toggleBilling(); // run on load
+        sameAsBillingCheckbox.addEventListener('change', function () {
+            const isChecked = sameAsBillingCheckbox.checked ? 1 : 0;
+
+            $.ajax({
+                url: 'index.php?route=checkout/shipping_address.sameAsBilling&language={{ language }}',
+                type: 'post',
+                dataType: 'json',
+                data: { same_as_billing: isChecked },
+                success: function (json) {
+                    if (json && json.redirect) {
+                        location = json.redirect;
+                        return;
+                    }
+
+                    toggleBilling();
+
+                    // Confirm must reflect updated session state
+                    $('#checkout-confirm').load('index.php?route=checkout/confirm.confirm&language={{ language }}');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    // Revert UI visibility to match checkbox state anyway
+                    toggleBilling();
+                }
+            });
+        });
+    }
+});
+</script>
+<!-- ✅ JS for toggle -->
+<script>
+function toggleShipping(value) {
+  // set radio
+  $('input[name="shipping_existing"][value="' + value + '"]')
+    .prop('checked', true)
+    .trigger('change');
+
+  // toggle active styles
+  $('.shipping-option').removeClass('border-primary bg-light');
+  $('.shipping-option[data-value="' + value + '"]')
+    .addClass('border-primary bg-light');
+
+  // toggle sections
+  if (value === 1) {
+    $('#shipping-existing').show();
+    $('#shipping-new').hide();
+  } else {
+    $('#shipping-existing').hide();
+    $('#shipping-new').show();
+  }
+}
+
+// click on shipping option
+$('.shipping-option').on('click', function () {
+  const value = Number($(this).data('value'));
+  toggleShipping(value);
+});
+
+// close button → reset to existing address
+$('#button-shipping-address-close').on('click', function () {
+  toggleShipping(1);
+});
+
+</script>
+
+<!-- ✅ CSS styling -->
+<style>
+.shipping-option {
+  transition: all 0.25s ease;
+}
+.shipping-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.shipping-option.bg-light {
+  background-color: #f8f9fa !important;
+}
+</style>
+<!-- <script>
+$(document).ready(function () {
+
+    /* =============================
+     * AUTO-SELECT PAYMENT ADDRESS
+     * ============================= */
+    if ($('#input-payment-address').length) {
+        const paymentAddress = $('#input-payment-address');
+
+        if (paymentAddress.val()) {
+            paymentAddress.trigger('change');
+        }
+    }
+
+    /* =============================
+     * AUTO-SELECT SHIPPING ADDRESS
+     * ============================= */
+    if ($('#input-shipping-address').length) {
+        const shippingAddress = $('#input-shipping-address');
+
+        if (shippingAddress.val()) {
+            shippingAddress.trigger('change');
+        }
+    }
+
+});
+</script> -->

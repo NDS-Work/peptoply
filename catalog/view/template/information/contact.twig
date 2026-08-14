@@ -1,0 +1,138 @@
+{{ header }}
+
+<!-- Header Banner Section -->
+<section class="peptoply-contact-section bg-white">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <!-- Left: Title & Description -->
+      <div class="col-md-6">
+        <h1 class="mb-5 h2 text-primary">{{ header_banner.title }}</h1>
+        <!-- <p>{{ header_banner.description }}</p> -->
+             <div class="row justify-content-center g-4">
+      {% for contact in company_contacts %}
+        <div class="d-flex align-items-center gap-4">
+          <div class="contact-icon">
+          <i class="fs-3 text-primary {{ contact.icon }}"></i>
+        </div>
+        <div>
+          <h4 class="mb-0">{{ contact.title }}</h4>
+        {% if contact.href %}
+          <p class="mb-0"><a href="{{ contact.href }}">{{ contact.value }}</a></p>
+        {% else %}
+          <p class="mb-0">{{ contact.value|raw }}</p>
+        {% endif %}
+        </div>
+        </div>
+      {% endfor %}
+    </div>
+      </div>
+      <!-- Right: Contact Form -->
+      <div class="col-md-6">
+        <div class="card p-4 shadow-card border-0">
+          <h3>Get in touch</h3>
+<form action="{{ action }}" method="post" class="contact-form">
+
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+
+  <div class="form-group">
+    <label for="input-name">Name</label>
+    <input type="text" name="name" id="input-name"
+           value="{{ form.name }}"
+           class="form-control"
+           required minlength="3" maxlength="32">
+  </div>
+
+  <div class="form-group">
+    <label for="input-email">Email</label>
+    <input type="email" name="email" id="input-email"
+           value="{{ form.email }}"
+           class="form-control"
+           required>
+  </div>
+
+  <div class="form-group">
+    <label for="input-phone">Phone</label>
+    <input type="tel" name="phone" id="input-phone"
+           value="{{ form.phone }}"
+           class="form-control"
+           required minlength="5"
+           pattern="[0-9+\-\s]+">
+  </div>
+
+  <div class="form-group">
+    <label for="input-message">Message</label>
+    <textarea name="message" id="input-message" rows="5"
+              class="form-control"
+              required minlength="10" maxlength="3000">{{ form.message }}</textarea>
+  </div>
+
+  <!-- Google reCAPTCHA v2 -->
+  <div class="form-group mt-3">
+    <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-3">Submit</button>
+</form>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Company Contacts Section -->
+<!-- <section class="pt-5">
+  <div class="container text-center">
+    <div class="row justify-content-center g-4">
+      {% for contact in company_contacts %}
+      <div class="col-md-4">
+        <div class="card border rounded-md-5 rounded p-3 p-md-5">
+          <div>
+          <i class="fs-3 text-primary {{ contact.icon }}"></i>
+        </div>
+        <h4>{{ contact.title }}</h4>
+        {% if contact.href %}
+          <p class="mb-0"><a href="{{ contact.href }}">{{ contact.value }}</a></p>
+        {% else %}
+          <p class="mb-0">{{ contact.value|raw }}</p>
+        {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section> -->
+
+<!-- 3rd Section: Map -->
+
+{% if map_iframe %}
+  <section>
+    <h2>Our Location</h2>
+    <div class="map-container">
+      {{ map_iframe|raw }}
+    </div>
+  </section>
+{% endif %}
+
+<!-- <section>
+  <h2 class="text-center mb-5 fw-bold">Our Location</h2>
+  <div style="width: 100%; height: 600px;">
+    <iframe
+      width="100%"
+      height="100%"
+      style="border:0"
+      loading="lazy"
+      allowfullscreen
+      src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3501.5156188915353!2d77.13804967550121!3d28.644276075658375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjjCsDM4JzM5LjQiTiA3N8KwMDgnMjYuMyJF!5e0!3m2!1sen!2sin!4v1767176541104!5m2!1sen!2sin">
+    </iframe>
+  </div>
+</section> -->
+
+
+
+{{ footer }}

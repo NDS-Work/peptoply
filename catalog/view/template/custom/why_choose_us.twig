@@ -1,0 +1,25 @@
+<section class="peptoply-choose-us-section py-4 py-md-5">
+  <div class="container">
+    <h2 class="mb-md-5 mb-4">Why Choose Us</h2>
+    <div class="row g-4">
+      {% set benefits = [
+          { 'title': 'Best Quality', 'desc': 'India\'s only brand manufacturing 100% termite proof plywood', 'icon': 'image/catalog/peptoply/choose/why-choose-icon-1.webp' },
+          { 'title': '100% money back warranty', 'desc': 'And not just empty talk, We have complete confidence in our product quality', 'icon': 'image/catalog/peptoply/choose/why-choose-icon-3.webp' },
+          { 'title': 'No Duplicacy', 'desc': 'We deliver directly eliminating all middlemen', 'icon': 'image/catalog/peptoply/choose/why-choose-icon-2.webp' },
+          { 'title': 'Fast delivery', 'desc': 'orders are delivered in 1-2 working days', 'icon': 'image/catalog/peptoply/choose/why-choose-icon-5.webp' },
+          { 'title': 'Cash on Delivery Available', 'desc': 'For your complete peace of mind', 'icon': 'image/catalog/peptoply/choose/why-choose-icon-6.webp' },
+          { 'title': 'Superior Customer Service', 'desc': 'Before, during and after your purchase', 'icon': 'image/catalog/peptoply/choose/why-choose-icon-4.webp' }
+        ]
+      %}
+      {% for benefit in benefits %}
+        <div class="col-md-6 col-lg-4">
+          <div class="peptoply-grid-card">
+            <img src="{{ base }}{{ benefit.icon }}" alt="{{ benefit.title }}">
+            <h3>{{ benefit.title }}</h3>
+            <p>{{ benefit.desc }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

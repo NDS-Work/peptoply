@@ -1,0 +1,95 @@
+<section class="peptoply-testimonials-section py-4 py-md-5">
+  <div class="container">
+    <h2 class="mb-md-5 mb-4">What Our Customers Say</h2>
+    {% set testimonials = [
+      {
+        'avatar': 'image/catalog/peptoply/testimonials/image.webp',
+        'name': 'Devinder Kashyap',
+        'role': 'Interior designer Decora Design Industries',
+        'heading': 'Great Service, Great Quality!',
+        'stars': 5,
+        'review': 'Pepto Ply stands out with its advanced anti-termite technology, ensuring long-lasting protection and durability for all your wooden needs. Unlike traditional plywood, it is engineered with a unique termite-resistant formulation that penetrates deep into the wood, offering unparalleled defense against infestations. This makes Pepto Ply the ideal choice for homeowners and businesses seeking reliable, high-quality, and maintenance-free solutions.'
+      },
+      {
+        'avatar': 'image/catalog/peptoply/testimonials/image-1.webp',
+        'name': 'Mr. Vibhor Garg',
+        'role': 'Architects Studio',
+        'heading': 'Best Plywood for Projects',
+        'stars': 4,
+        'review': 'I always recommend Pepto Ply for my clients. The anti-termite property really works and saves us long-term headaches. Delivery is always on time and the finish is excellent.'
+      },
+      {
+        'avatar': 'image/catalog/peptoply/testimonials/image-2.webp',
+        'name': 'mr. Gaurav Chauhan',
+        'role': 'Afflatus Design Studio',
+        'heading': 'Truly Worry-free!',
+        'stars': 3,
+        'review': 'After using Pepto Ply in my kitchen, I have had zero issues with termites. The quality is much better than other brands I’ve tried.'
+      }
+    ] %}
+    <div class="peptoply-row">
+      <!-- Thumbnail swiper -->
+      <div class="peptoply-left">
+        <div thumbsSlider="" class="swiper peptoply-mySwiper-side">
+          <div class="swiper-wrapper">
+            {% for testimonial in testimonials %}
+              <div class="swiper-slide peptoply-slide text-center">
+                <img src="{{ base }}{{ testimonial.avatar }}" class="img-box rounded-circle" alt="{{ testimonial.name }}">
+                <div class="content-box">
+                  <h4 class="mt-0">{{ testimonial.name }}</h4>
+                  <p class="mb-0">{{ testimonial.role }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <!-- Main swiper -->
+      <div class="peptoply-right">
+        <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper peptoply-mySwiper-main">
+          <div class="swiper-wrapper">
+            {% for testimonial in testimonials %}
+              <div class="swiper-slide">
+                <div class="peptoply-main-slide">
+                <div class="peptoply-star-rating mb-2">
+                    {% for i in 1..testimonial.stars %}
+                      <img src="{{ base }}image/catalog/peptoply/testimonials/star-icon.svg" alt="star">
+                    {% endfor %}
+                  </div>
+                  <h3>{{ testimonial.heading }}</h3>
+                  <p>{{ testimonial.review }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+                        <div class="peptoply-swiper-navigation">
+                <div class="peptoply-swiper-button-prev">
+                  <svg width="41" height="40" viewBox="0 0 41 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20.5" cy="20" r="20" fill="white" />
+                    <path d="M23.5 13L16.5 20L23.5 27" stroke="#1C4955" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div class="peptoply-swiper-button-next">
+                  <svg width="42" height="40" viewBox="0 0 42 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20.5" cy="20" r="20" fill="white" />
+                    <path d="M18 27L25 20L18 13" stroke="#1C4955" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </div>
+              </div>
+              <div class="peptoply-quote-top">
+                <svg width="44" height="35" viewBox="0 0 44 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M44 26.5865C44 29.1667 43.1571 31.242 41.4713 32.8125C39.7854 34.2708 37.6501 35 35.0651 35C32.0307 35 29.5019 33.9904 27.4789 31.9712C25.5683 29.9519 24.613 26.9792 24.613 23.0529C24.613 19.351 25.1188 16.2099 26.1303 13.6298C27.2542 10.9375 28.5466 8.69391 30.0077 6.89904C31.5811 4.99199 33.1545 3.47757 34.728 2.35577C36.4138 1.23398 37.8748 0.448719 39.1111 0L43.3257 5.88943C40.8531 7.1234 38.8301 8.80609 37.2567 10.9375C35.7957 12.9567 35.0651 15.5369 35.0651 18.6779C35.5147 18.5657 36.1328 18.5096 36.9195 18.5096C39.1673 18.5096 40.9093 19.2949 42.1456 20.8654C43.3819 22.4359 44 24.343 44 26.5865ZM19.387 26.5865C19.387 29.1667 18.5441 31.242 16.8582 32.8125C15.1724 34.2708 13.037 35 10.4521 35C7.41762 35 4.88889 33.9904 2.8659 31.9712C0.9553 29.9519 0 26.9792 0 23.0529C0 19.351 0.505747 16.2099 1.51724 13.6298C2.64112 10.9375 3.93359 8.69391 5.39464 6.89904C6.96807 4.99199 8.54151 3.47757 10.1149 2.35577C11.8008 1.23398 13.2618 0.448719 14.4981 0L18.7126 5.88943C16.2401 7.1234 14.2171 8.80609 12.6437 10.9375C11.1826 12.9567 10.4521 15.5369 10.4521 18.6779C10.9017 18.5657 11.5198 18.5096 12.3065 18.5096C14.5543 18.5096 16.2963 19.2949 17.5326 20.8654C18.7688 22.4359 19.387 24.343 19.387 26.5865Z"
+                    fill="#616161" fill-opacity="0.25" />
+                </svg>
+                <svg width="44" height="35" viewBox="0 0 44 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M0 26.5865C0 29.1667 0.842911 31.242 2.52874 32.8125C4.21456 34.2708 6.34993 35 8.93487 35C11.9693 35 14.4981 33.9904 16.5211 31.9712C18.4317 29.9519 19.387 26.9792 19.387 23.0529C19.387 19.351 18.8812 16.2099 17.8697 13.6298C16.7458 10.9375 15.4534 8.69391 13.9923 6.89904C12.4189 4.99199 10.8455 3.47757 9.27203 2.35577C7.58621 1.23398 6.12516 0.448719 4.88889 0L0.674328 5.88943C3.14687 7.1234 5.16986 8.80609 6.7433 10.9375C8.20434 12.9567 8.93487 15.5369 8.93487 18.6779C8.48531 18.5657 7.86718 18.5096 7.08046 18.5096C4.8327 18.5096 3.09068 19.2949 1.8544 20.8654C0.618134 22.4359 0 24.343 0 26.5865ZM24.613 26.5865C24.613 29.1667 25.4559 31.242 27.1418 32.8125C28.8276 34.2708 30.963 35 33.5479 35C36.5824 35 39.1111 33.9904 41.1341 31.9712C43.0447 29.9519 44 26.9792 44 23.0529C44 19.351 43.4943 16.2099 42.4828 13.6298C41.3589 10.9375 40.0664 8.69391 38.6054 6.89904C37.0319 4.99199 35.4585 3.47757 33.8851 2.35577C32.1992 1.23398 30.7382 0.448719 29.5019 0L25.2874 5.88943C27.7599 7.1234 29.7829 8.80609 31.3563 10.9375C32.8174 12.9567 33.5479 15.5369 33.5479 18.6779C33.0983 18.5657 32.4802 18.5096 31.6935 18.5096C29.4457 18.5096 27.7037 19.2949 26.4674 20.8654C25.2312 22.4359 24.613 24.343 24.613 26.5865Z"
+                    fill="#616161" fill-opacity="0.25" />
+                </svg>
+              </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,200 @@
+{% if products %}
+  {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> {{ error_warning }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endif %}
+  {% if error_stock %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> {{ error_stock }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endif %}
+  {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> {{ success }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endif %}
+  {% if attention %}
+    <div class="alert alert-info"><i class="fa-solid fa-circle-info"></i> {{ attention }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endif %}
+  <h1>{{ heading_title }}{% if weight %} ({{ weight }}){% endif %}</h1>
+  <div id="output-cart" class="table-responsive">
+    <table class="table table-bordered" id="shopping-cart-table">
+      <thead>
+        <tr>
+          <th class="text-center">{{ column_image }}</th>
+          <th>{{ column_name }}</th>
+          <th>{{ column_quantity }}</th>
+          <th class="text-end">{{ column_price }}</th>
+          <th class="text-end">{{ column_total }}</th>
+          <th class="text-end" style="width: 40px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+          <tr>
+            <td class="text-center">{% if product.thumb %}<a href="{{ product.href }}"><img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-thumbnail"/></a>{% endif %}</td>
+            <td class="text-start text-wrap"><a href="{{ product.href }}">{{ product.name }}</a>{% if not product.stock %} <span class="text-danger">***</span>{% endif %}
+              <ul class="list-unstyled mb-0">
+                <li>
+                  <small> - {{ text_model }}: {{ product.model }}</small>
+                </li>
+                {% for option in product.option %}
+                  <li>
+                    <small> - {{ option.name }}: {{ option.value }}</small>
+                  </li>
+                {% endfor %}
+                {% if product.subscription %}
+                  <li>
+                    <small> - {{ text_subscription }}: {{ product.subscription }}</small>
+                  </li>
+                {% endif %}
+                {% if product.reward %}
+                  <li>
+                    <small> - {{ text_points }}: {{ product.reward }}</small>
+                  </li>
+                {% endif %}
+              </ul>
+            </td>
+         <td class="cart-qty-td" data-qty="{{ product.quantity }}">
+  <!-- DISPLAY MODE -->
+  <div class="cart-display d-flex justify-content-between align-items-center">
+    <span class="cart-price fw-semibold">
+      {{ product.quantity }}
+    </span>
+
+    <button type="button"
+            class="p-0 bg-transparent border-0 text-info cart-edit-btn"
+            title="{{ button_update }}">
+      <i class="fa-solid fa-pen"></i>
+    </button>
+  </div>
+
+  <!-- EDIT MODE -->
+  <div class="cart-edit d-none">
+    <form method="post" data-oc-target="#shopping-cart">
+      <div class="input-group">
+        <input type="text"
+               name="quantity"
+               value="{{ product.quantity }}"
+               size="1"
+               class="form-control{% if product.minimum %} is-invalid{% endif %}" />
+
+        <input type="hidden" name="key" value="{{ product.cart_id }}"/>
+        <div class="d-flex">
+             <button type="button" class="btn btn-outline-secondary rounded-0 qty-decrease">
+          <i class="fa-solid fa-minus"></i>
+        </button>
+           <button type="button" class="btn btn-outline-secondary rounded-0 qty-increase">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        </div>
+        <button type="submit"
+                formaction="{{ edit }}"
+                class="btn btn-primary">
+          Update
+        </button>
+      </div>
+    </form>
+
+    {% if product.minimum %}
+      <small class="invalid-feedback d-block">{{ product.minimum }}</small>
+    {% endif %}
+  </div>
+</td>
+
+            <td class="text-end">{{ product.price }}</td>
+            <td class="text-end">{{ product.total }}</td>
+            <td style="text-align: center;">
+  <a href="{{ product.remove }}"
+     data-oc-target="#shopping-cart"
+     data-bs-toggle="tooltip"
+     class="text-delete btn-danger">
+    <i class="fa-solid fa-trash-can"></i>
+  </a>
+</td>
+
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot id="checkout-total">
+        {% for total in totals %}
+          <tr>
+            <td colspan="4" class="text-end"><strong>{{ total.title }}</strong></td>
+            <td class="text-end">{{ total.text }}</td>
+            <td></td>
+          </tr>
+        {% endfor %}
+      </tfoot>
+    </table>
+  </div>
+
+  {% if modules %}
+    <h2>{{ text_next }}</h2>
+    <p>{{ text_next_choice }}</p>
+    <div id="accordion" class="accordion">
+      {% for module in modules %}
+        {{ module }}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <br/>
+  <div class="row" id="checkout-buttons">
+    <div class="col"><a href="{{ continue }}" class="btn btn-light">{{ button_shopping }}</a></div>
+    <div class="col text-end"><a href="{{ checkout }}" class="btn btn-primary">{{ button_checkout }}</a></div>
+  </div>
+{% else %}
+  <h1>{{ heading_title }}</h1>
+  <p>{{ text_no_results }}</p>
+  <div class="text-end"><a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a></div>
+{% endif %}
+
+<script>
+// OPEN edit mode
+$(document).on('click', '.cart-edit-btn', function () {
+    const $td = $(this).closest('.cart-qty-td');
+
+    // Close all other edits
+    $('.cart-display').removeClass('d-none');
+    $('.cart-edit').addClass('d-none');
+
+    // Open current edit
+    $td.find('.cart-display').addClass('d-none');
+    $td.find('.cart-edit').removeClass('d-none');
+
+    // REINITIALIZE input to stable data-qty
+    const baseQty = parseInt($td.data('qty'), 10) || 0;
+    $td.find('input[name="quantity"]').val(baseQty).focus().select();
+});
+
+// Only bind once
+// Remove old handlers first, then bind
+$(document).off('click', '.cart-qty-td .qty-increase').on('click', '.cart-qty-td .qty-increase', function () {
+    const $td = $(this).closest('.cart-qty-td');
+    const $input = $td.find('input[name="quantity"]');
+    let qty = parseInt($input.val(), 10) || 0;
+    $input.val(qty + 1);
+});
+
+$(document).off('click', '.cart-qty-td .qty-decrease').on('click', '.cart-qty-td .qty-decrease', function () {
+    const $td = $(this).closest('.cart-qty-td');
+    const $input = $td.find('input[name="quantity"]');
+    let qty = parseInt($input.val(), 10) || 0;
+    if (qty > 1) $input.val(qty - 1);
+});
+
+
+// SUBMIT
+$(document).on('submit', '.cart-qty-td .cart-edit form', function (e) {
+    const $td = $(this).closest('.cart-qty-td');
+    const qty = parseInt($td.find('input[name="quantity"]').val(), 10);
+
+    if (!qty || qty <= 0) {
+        e.preventDefault();
+        alert('Quantity must be greater than 0');
+        return false;
+    }
+
+    // Update stable data-qty AFTER submit
+    $td.data('qty', qty);
+
+    // Close edit visually
+    $td.find('.cart-edit').addClass('d-none');
+    $td.find('.cart-display').removeClass('d-none');
+});
+</script>

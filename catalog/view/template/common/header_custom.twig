@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html dir="{{ direction }}" lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{ title }}</title>
+  <base href="{{ base }}"/>
+  {% if description %}
+    <meta name="description" content="{{ description }}"/>
+  {% endif %}
+  {% if keywords %}
+    <meta name="keywords" content="{{ keywords }}"/>
+  {% endif %}
+
+  <script src="{{ jquery }}" type="text/javascript"></script>
+  <link href="{{ bootstrap }}" type="text/css" rel="stylesheet" media="screen"/>
+  <link href="{{ icons }}" rel="stylesheet" type="text/css"/>
+  <link href="{{ stylesheet }}" type="text/css" rel="stylesheet"/>
+  <link href="{{ custom_css }}" type="text/css" rel="stylesheet"/>
+  <script src="catalog/view/javascript/common.js" type="text/javascript"></script>
+
+  {% if icon %}
+    <link rel="icon" href="{{ icon }}" type="image/png">
+  {% endif %}
+
+  {% for style in styles %}
+    <link href="{{ style.href }}" type="text/css" rel="{{ style.rel }}" media="{{ style.media }}"/>
+  {% endfor %}
+  {% for script in scripts %}
+    <script src="{{ script.href }}" type="text/javascript"></script>
+  {% endfor %}
+  {% for link in links %}
+    <link href="{{ link.href }}" rel="{{ link.rel }}"/>
+  {% endfor %}
+  {% for analytic in analytics %}
+    {{ analytic }}
+  {% endfor %}
+  
+  <style>
+    /* Quick extra styles to hide the sliding search panel */
+    #searchPanel {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: white;
+      padding: 15px 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      z-index: 1050; /* Above navbar */
+      transition: transform 0.3s ease;
+    }
+    #searchPanel.show {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+<header class="peptoply-header navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top">
+  <div class="peptoply-container container-fluid d-flex justify-content-between align-items-center">
+
+    <div class="peptoply-logo navbar-brand">
+      {% if logo %}
+        <a href="{{ home }}">
+          <img src="{{ logo }}" alt="{{ name }}" class="img-fluid" style="max-height:50px;" />
+        </a>
+      {% else %}
+        <a href="{{ home }}" class="h4 text-dark m-0">{{ name }}</a>
+      {% endif %}
+    </div>
+
+    <nav class="navbar-collapse collapse d-none d-lg-block">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
+        <li class="nav-item"><a class="nav-link text-dark" href="{{ url_link_products }}">Products</a></li>
+        <li class="nav-item"><a class="nav-link text-dark" href="{{ url_link_services }}">Services</a></li>
+        <li class="nav-item"><a class="nav-link text-dark" href="{{ url_link_blog }}">Blog</a></li>
+      </ul>
+    </nav>
+
+    <div class="btn-group d-flex align-items-center gap-3">
+
+      <button id="searchToggleBtn" type="button" class="btn btn-outline-secondary" title="Search" aria-expanded="false" aria-controls="searchPanel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#1c4955" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bi bi-search" viewBox="0 0 24 25">
+          <circle cx="11" cy="11.5" r="7.5"></circle>
+          <line x1="21" y1="21.5" x2="16.65" y2="17.15"></line>
+        </svg>
+      </button>
+
+      {% if not logged %}
+        <a href="{{ login }}" class="btn btn-link peptoply-login-btn">Login</a>
+        <a href="{{ register }}" class="btn btn-primary peptoply-signup-btn">Signup</a>
+      {% else %}
+        <a href="{{ account }}" class="btn btn-link peptoply-login-btn">Account</a>
+        <a href="{{ logout }}" class="btn btn-danger peptoply-signup-btn">Logout</a>
+      {% endif %}
+    </div>
+    
+  </div>
+</header>
+
+<!-- Sliding Top Search Panel -->
+<div id="searchPanel" class="d-lg-none">
+  <form action="{{ url.search }}" method="get" class="d-flex">
+    <input type="text" name="search" class="form-control me-2" placeholder="Search products..." aria-label="Search" required />
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button id="searchCloseBtn" type="button" class="btn btn-secondary ms-2">Close</button>
+  </form>
+</div>
+
+<script>
+  // Toggle the visibility of search panel on small screens
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchToggleBtn = document.getElementById('searchToggleBtn');
+    const searchCloseBtn = document.getElementById('searchCloseBtn');
+    const searchPanel = document.getElementById('searchPanel');
+
+    searchToggleBtn.addEventListener('click', function() {
+      const isShown = searchPanel.classList.contains('show');
+      if (isShown) {
+        searchPanel.classList.remove('show');
+        searchToggleBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        searchPanel.classList.add('show');
+        searchToggleBtn.setAttribute('aria-expanded', 'true');
+        // Focus input for accessibility
+        searchPanel.querySelector('input[name="search"]').focus();
+      }
+    });
+
+    searchCloseBtn.addEventListener('click', function() {
+      searchPanel.classList.remove('show');
+      searchToggleBtn.setAttribute('aria-expanded', 'false');
+    });
+
+    // Optional: Close search panel on ESC key press
+    document.addEventListener('keydown', function(ev) {
+      if(ev.key === "Escape" && searchPanel.classList.contains('show')) {
+        searchPanel.classList.remove('show');
+        searchToggleBtn.setAttribute('aria-expanded', 'false');
+        searchToggleBtn.focus();
+      }
+    });
+  });
+</script>
+
+<main>
+  {{ menu }}
+

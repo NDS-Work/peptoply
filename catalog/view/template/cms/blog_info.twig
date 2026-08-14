@@ -1,0 +1,39 @@
+{{ header }}
+<div id="cms-blog" class="container">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  <div class="row justify-content-center">
+    {{ column_left }}
+    <div id="content">
+      <div class="col-lg-8 single-article mx-auto mb-5">
+      {{ content_top }}
+      {% if image %}
+        <img src="{{ base }}image/{{ image }}" alt="{{ heading_title }}" title="{{ heading_title }}" class="img-thumbnail mb-2"/>
+      {% else %}
+        <img src="https://peptoply.com/image/catalog/peptoply/placeholder/blog-placeholder.png" alt="{{ heading_title }}" title="{{ heading_title }}" class="w-100"/>
+      {% endif %}
+     <div class="p-3">
+      <h1 class="text-primary h2">{{ heading_title }}</h1>
+       <div class="blog-markup">{{ description }}</div>
+      <p class="blog-meta mb-0">{{ text_by }} <a href="{{ filter_author }}">{{ author }}</a> - {{ date_added }}</p>
+      {% if tags %}
+        <p>{{ text_tags }}
+          {% for tag in tags %}
+            <a href="{{ tag.href }}">{{ tag.tag }}</a>{% if not loop.last %},{% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+      {% if comment %}
+        <div id="comment-container">{{ comment }}</div>
+      {% endif %}
+     </div>
+      </div>
+      {{ content_bottom }}
+    </div>
+    {{ column_right }}
+  </div>
+</div>
+{{ footer }}

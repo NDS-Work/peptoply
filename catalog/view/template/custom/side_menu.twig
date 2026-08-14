@@ -1,0 +1,69 @@
+{# Desktop horizontal menu - visible on large screens and up #}
+<nav class="d-none d-lg-flex justify-content-center custom-side-menu align-items-center gap-xl-4 gap-3 position-relative">
+  <ul class="nav">
+    <li class="nav-item megamenu-toggle"><a href="{{ links.products }}" class="nav-link">Products</a></li>
+    <li class="nav-item"><a href="{{ links.about }}" class="nav-link">About</a></li>
+    <li class="nav-item"><a href="{{ links.blog }}" class="nav-link">Blog</a></li>
+    <li class="nav-item"><a href="{{ links.contact }}" class="nav-link">Contact</a></li>
+  </ul>
+  {% if store_phone %}
+  <a href="tel:{{store_phone}}" class="text-primary fw-semibold"><i class="fa-solid fa-phone me-2"></i> {{store_phone}}</a>
+  {% endif %}
+</nav>
+
+{# Mobile sidebar menu and toggle button - visible below large screens #}
+<section id="peptoplySidebar" class="d-lg-none">
+  <button id="side-menu-toggle" class="sidebar-btn btn btn-primary position-absolute top-3 right-3"
+    style="z-index: 1060;">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <div id="side-menu"
+    class="side-menu bg-light position-fixed top-0 start-0 vw-75 close shadow-lg p-4 flex-column"
+    style="z-index: 1070;">
+    <button type="button" id="side-menu-close" class="btn btn-close ms-auto d-block align-self-end mb-3"
+      aria-label="Close"></button>
+
+    <div class="d-flex flex-column h-100 justify-content-between align-items-center">
+      <nav class="nav flex-column">
+        <a href="{{ links.products }}" class="nav-link mb-2">Products</a>
+        <a href="{{ links.about }}" class="nav-link mb-2">About</a>
+        <a href="{{ links.blog }}" class="nav-link mb-2">Blog</a>
+        <a href="{{ links.contact }}" class="nav-link mb-2">Contact</a>
+        {% if logged %}
+        <a href="{{ links.account }}" class="nav-link mb-2">Account</a>
+        {% endif %}
+      </nav>
+      <div class="mb-5 w-100">
+        {% if not logged %}
+        <a href="{{ links.login }}" class="btn btn-outline-primary w-100 mt-2 btn-login-sidebar">Login / Signup</a>
+        {% else %}
+        <a href="{{ links.logout }}" class="btn btn-outline-primary w-100 mt-2"> Logout</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const sideMenu = document.getElementById('side-menu');
+  const toggleButton = document.getElementById('side-menu-toggle');
+  const closeButton = document.getElementById('side-menu-close');
+
+  toggleButton.addEventListener('click', () => {
+    sideMenu.classList.remove('close');
+    document.body.style.overflow = 'hidden';
+  });
+
+  closeButton.addEventListener('click', () => {
+    sideMenu.classList.add('close');
+    document.body.style.overflow = '';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (!sideMenu.contains(e.target) && !toggleButton.contains(e.target)) {
+      sideMenu.classList.add('close');
+      document.body.style.overflow = '';
+    }
+  });
+</script>

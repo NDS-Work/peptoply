@@ -1,0 +1,60 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="button" data-bs-toggle="tooltip" title="Refresh" class="btn btn-light" onclick="location.reload();"><i class="fa-solid fa-refresh"></i></button>
+      </div>
+      <h1>SMS Logs</h1>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> {{ success }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    {% endif %}
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-list"></i> Fast2SMS Delivery Reports</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Mobile</th>
+                <th>DLT Name</th> {# Added Column #}
+                <th>Status</th>
+                <th>Description</th>
+                <th>Sent Time</th>
+                <th>Delivery Time</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in logs %}
+              <tr>
+                <td>{{ log.mobile }}</td>
+                <td><strong>{{ log.sender_id }}</strong></td> {# Added DLT/Sender ID #}
+                <td>
+                    {% if log.status == 'Delivered' %}
+                        <span class="badge bg-success">Delivered</span>
+                    {% else %}
+                        <span class="badge bg-danger">{{ log.status }}</span>
+                    {% endif %}
+                </td>
+                <td><small>{{ log.status_description }}</small></td>
+                <td>{{ log.sent_time }}</td>
+                <td>{{ log.delivery_time }}</td>
+                <td class="text-end">
+                  <a href="{{ log.delete }}" onclick="return confirm('Delete this record?');" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></a>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="7" class="text-center">No logs found.</td></tr> {# Updated Colspan to 7 #}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}

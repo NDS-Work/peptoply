@@ -1,0 +1,30 @@
+<div class="resent-blog">
+<h3 class="mb-3">Recent Articles</h3>
+<div class="row">
+  {% for blog in blogs %}
+    <div class="col-lg-4 xol-md-6 mb-4">
+      <div class="product-thumb bg-white">
+        <div class="image">
+          <a href="{{ blog.href }}"><img src="{{ base }}image/{{ blog.thumb }}" alt="{{ blog.name }}" title="{{ blog.name }}" class="img-fluid"/></a>
+        </div>
+        <div class="content p-3">
+          <div class="mb-0 p-0" class="description">
+            <h4 class="mb-0"><a href="{{ blog.href }}">{{ blog.name }}</a></h4>
+            <p class="line-clamp-4 mt-2 mb-2">{{ blog.description }}</p>
+            <ul class="list-inline article-meta blog-meta mb-0">
+  <li class="list-inline-item">
+    {{ text_by }}
+    <a href="{{ blog.filter_author }}">{{blog.author }}</a>
+  </li>
+  <li class="list-inline-item">
+    {{ blog.date_added }}
+  </li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+</div>

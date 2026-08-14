@@ -1,0 +1,57 @@
+<div class="header-controls d-flex justify-content-end align-items-center gap-3">
+
+  <!-- Search Icon and Search Bar -->
+  <div class="search-control position-relative">
+    <button id="search-toggle" class="search-btn p-0" aria-label="Toggle search" type="button">
+      <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+    </button>
+  </div>
+
+  <!-- Login/Signup or Account Icon -->
+  <div class="user-control d-flex align-items-center gap-3">
+    {% if logged %}
+      <a href="{{ account_url }}" title="My Account" class="p-0">
+        <i class="fa-solid fa-user fa-lg"></i>
+        <span class="d-none d-lg-inline ms-1"></span>
+      </a>
+            <a href="{{ logout_url }}" title="Login / Signup" class="btn btn-outline-primary btn-login d-lg-block d-none">
+        <span class="d-none d-lg-inline">Logout</span>
+      </a>
+    {% else %}
+      <a href="{{ login_url }}" title="Login / Signup" class="btn btn-outline-primary btn-login">
+        <i class="fa-solid fa-user d-lg-none"></i>
+        <span class="d-none d-lg-inline">Login / Signup</span>
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Cart Icon with Badge -->
+  <div class="cart-control position-relative mb-0" id="cart">
+    <a href="{{ cart_url }}" title="Shopping Cart" class="cart-icon position-relative">
+      <i class="fa-solid fa-cart-shopping fa-lg"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-cart">
+          <span id="cart-total">{{ cart_total }}</span>
+          <span class="visually-hidden">items in cart</span>
+        </span>
+    </a>
+  </div>
+
+</div>
+
+<script>
+  document.getElementById('search-toggle').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const form = document.getElementById('search-form');
+    form.classList.toggle('d-none');
+    if (!form.classList.contains('d-none')) {
+      form.querySelector('input[name=search]').focus();
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    const form = document.getElementById('search-form');
+    if (!form.contains(e.target)) {
+      form.classList.add('d-none');
+    }
+  });
+</script>

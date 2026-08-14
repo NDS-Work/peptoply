@@ -1,0 +1,42 @@
+{{ header }}
+<div id="checkout-checkout" class="container">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+  <div class="row">{{ column_left }}
+    <div id="content" class="col">{{ content_top }}
+      <div class="border-bottom mb-2">
+        <h1>{{ heading_title }}</h1>
+      <span class="text-success">Order will be delivered in 1-2 working days.</span>
+      </div>
+      <div class="row">
+        {% if register or payment_address or shipping_address %}
+          <div class="col-md-7 mb-3">
+            {% if register %}
+              <div id="checkout-register">{{ register }}</div>
+            {% endif %}
+                        {% if shipping_address %}
+              <div id="checkout-shipping-address">{{ shipping_address }}</div>
+            {% endif %}
+            {% if payment_address %}
+              <div id="checkout-payment-address">{{ payment_address }}</div>
+            {% endif %}
+            {{ referral }}
+          </div>
+        {% endif %}
+        <div class="col position-relative align-self-start">
+          {% if shipping_method %}
+            <div id="checkout-shipping-method" class="mb-3">{{ shipping_method }}</div>
+          {% endif %}
+          <div id="checkout-payment-method" class="mb-3">{{ payment_method }}</div>
+          <div id="checkout-confirm">{{ confirm }}</div>
+        </div>
+      </div>
+    </div>
+    {{ content_bottom }}
+  </div>
+  {{ column_right }}
+</div>
+{{ footer }}

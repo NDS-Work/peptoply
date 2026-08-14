@@ -1,0 +1,381 @@
+{# ── GST SECTION ─────────────────────────────────────────── #}
+<fieldset id="gst-section" class="mb-3">
+  <div class="d-flex align-items-center justify-content-between border rounded p-3 bg-light">
+    <div>
+      <strong id="gst-display">{{ gst_number ?: 'No GST added' }}</strong>
+      <span id="gst-active-badge"
+            class="badge {{ use_gst and gst_number ? 'bg-success' : 'bg-secondary' }}">
+        {{ use_gst and gst_number ? 'Active' : 'Inactive' }}
+      </span>
+    </div>
+    <button type="button" id="btn-open-gst-modal" class="btn btn-sm btn-outline-primary">
+      {{ gst_number ? 'Edit/Remove GST' : 'Add GST' }}
+    </button>
+  </div>
+</fieldset>
+
+{# GST Modal #}
+<div class="modal fade" id="modal-gst" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">GST Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">GST Number</label>
+          <input type="text" id="modal-gst-input" class="form-control"
+                 placeholder="GST Number" value="{{ gst_number }}">
+        </div>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input"
+                 id="modal-checkbox-use-gst" {{ use_gst ? 'checked' : '' }}>
+          <label class="form-check-label" for="modal-checkbox-use-gst">Use this GST</label>
+        </div>
+        <div id="modal-gst-msg" class="mt-2 small"></div>
+      </div>
+      <div class="modal-footer">
+        {#
+          "Save GST" no longer fires its own AJAX.
+          It closes the modal and updates the local state object only.
+          The actual session write happens together with payment selection
+          via saveCheckoutState — one atomic request.
+        #}
+        <button type="button" id="modal-save-gst" class="btn btn-primary w-100">Save GST</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ── PAYMENT METHOD SECTION ───────────────────────────────── #}
+<fieldset>
+  <legend class="d-none">
+    {{ heading_title }}
+    <span class="d-block fs-6 fw-semibold">(get COD on order below ₹2,00,000)</span>
+  </legend>
+
+  <button type="button" id="button-choose-payment"
+          class="btn {{ payment_method ? 'btn-outline-primary' : 'btn-primary' }}">
+    <span id="selected-payment-label">
+      {{ payment_method
+         ? payment_method|replace({' (': '('})|split('(')[0]|trim
+         : 'Choose Payment Method' }}
+    </span>
+  </button>
+
+  <input type="hidden" name="payment_method" value="{{ payment_method }}" id="input-payment-method" />
+  <input type="hidden" name="code"           value="{{ code }}"           id="input-payment-code"   />
+  <div id="error-payment-method" class="invalid-feedback"></div>
+</fieldset>
+
+{# ── COMMENT ──────────────────────────────────────────────── #}
+<div class="mb-2">
+  <label for="input-comment" class="form-label"><strong>{{ text_comments }}</strong></label>
+  <textarea name="comment" rows="4" id="input-comment" class="form-control">{{ comment }}</textarea>
+</div>
+
+{# ── AGREE TERMS ──────────────────────────────────────────── #}
+{% if text_agree %}
+<div class="form-check form-switch form-switch-lg form-check-reverse mt-3">
+  <label for="input-checkout-agree" class="form-check-label">{{ text_agree }}</label>
+  <input type="checkbox" name="agree" value="1" id="input-checkout-agree"
+         class="form-check-input" {% if agree %}checked{% endif %} />
+</div>
+{% endif %}
+
+<style>
+  .payment-option {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border-radius: 10px;
+  }
+  .payment-option:hover  { background-color: #f8f9fa; }
+  .payment-option.active { border: 2px solid #456a74; background: #e9f5ff; }
+</style>
+
+<script>
+$(document).ready(function () {
+
+  /* ============================================================
+     LOCAL STATE
+     Mirrors what the server has so we can bundle everything
+     into a single saveCheckoutState call when payment is chosen.
+  ============================================================ */
+  var localState = {
+    gstNumber  : '{{ gst_number|e('js') }}',
+    useGst     : {{ (use_gst and gst_number is not empty) ? 'true' : 'false' }},
+    paymentCode: '{{ code|e('js') }}',
+    paymentName: '{{ payment_method|e('js') }}'
+  };
+
+  /* ============================================================
+     CONFIRM PANEL RELOAD — only called after the single
+     saveCheckoutState AJAX has fully settled.
+  ============================================================ */
+  function reloadConfirm() {
+    $('#button-confirm').prop('disabled', true);
+    $('#checkout-confirm').load(
+      'index.php?route=checkout/confirm.confirm&language={{ language|e('js') }}',
+      function () { $('#button-confirm').prop('disabled', false); }
+    );
+  }
+
+  /* ============================================================
+     GST MODAL — only updates localState, no AJAX
+  ============================================================ */
+  var gstModal = new bootstrap.Modal(document.getElementById('modal-gst'));
+
+  $(document).on('click', '#btn-open-gst-modal', function (e) {
+    e.preventDefault();
+    $('#modal-gst-msg').text('').removeClass('text-danger text-success');
+    // Populate modal fields from current localState
+    $('#modal-gst-input').val(localState.gstNumber);
+    $('#modal-checkbox-use-gst').prop('checked', localState.useGst);
+    gstModal.show();
+  });
+
+  $(document).on('change', '#modal-checkbox-use-gst', function () {
+    if ($(this).is(':checked')) $('#modal-gst-input').focus();
+  });
+
+  // "Save GST" just commits to localState and updates the UI badge.
+  // No AJAX — the session write will happen with the next payment selection.
+  $(document).on('click', '#modal-save-gst', function () {
+    var number = $('#modal-gst-input').val().trim();
+    var useIt  = $('#modal-checkbox-use-gst').is(':checked');
+
+    localState.gstNumber = number;
+    localState.useGst    = useIt && number !== '';
+
+    // Update badge
+    $('#gst-display').text(number || 'No GST added');
+    $('#btn-open-gst-modal').text(number ? 'Edit/Remove GST' : 'Add GST');
+
+    if (localState.useGst) {
+      $('#gst-active-badge').removeClass('bg-secondary').addClass('bg-success').text('Active');
+    } else {
+      $('#gst-active-badge').removeClass('bg-success').addClass('bg-secondary').text('Inactive');
+    }
+
+    // Always close the modal; GST is either saved with payment selection,
+    // or applied immediately if payment was already chosen.
+    $('#modal-gst-msg').text('').removeClass('text-danger text-success');
+    gstModal.hide();
+
+    // If payment is not chosen yet, nothing else to do now.
+    if (!localState.paymentCode) return;
+
+    // Payment already chosen — re-fire saveCheckoutState so session is updated now
+    saveCheckoutState(localState.paymentCode, function (json) {
+      if (json && json['success']) {
+        reloadConfirm();
+      }
+    });
+  });
+
+  /* ============================================================
+     PAYMENT METHOD MODAL
+  ============================================================ */
+  var isPaymentUpdating  = false;
+  var paymentAjaxRequest = null;
+
+  $('#button-choose-payment').on('click', function () {
+    if (isPaymentUpdating) return;
+
+    $.ajax({
+      url      : 'index.php?route=checkout/payment_method.getMethods&language={{ language|e('js') }}',
+      dataType : 'json',
+      beforeSend: function () {
+        isPaymentUpdating = true;
+        $('#button-choose-payment').prop('disabled', true);
+      },
+      complete: function () {
+        $('#button-choose-payment').prop('disabled', false);
+        isPaymentUpdating = false;
+      },
+      success: function (json) {
+        $('#input-payment-method').removeClass('is-invalid');
+        $('#error-payment-method').removeClass('d-block');
+
+        if (json['error']) {
+          $('#input-payment-method').addClass('is-invalid');
+          $('#error-payment-method').html(json['error']).addClass('d-block');
+          return;
+        }
+
+        if (!json['payment_methods']) return;
+
+        $('#modal-payment').remove();
+
+        var selectedCode = localState.paymentCode;
+        var html = `
+          <div id="modal-payment" class="modal fade">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white d-block">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title text-white">
+                      <i class="fa fa-credit-card me-2"></i>{{ text_payment_method|escape('js') }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="small mt-1 opacity-75">
+                    <i class="fa fa-info-circle me-1"></i> Cash on Delivery is available for orders up to Rs 2,00,000 only.
+                  </div>
+                </div>
+                <div class="modal-body bg-light">
+                  <div class="row g-3" id="payment-card-list">`;
+
+        for (const [, group] of Object.entries(json['payment_methods'])) {
+          if (!group['error']) {
+            for (const option of Object.values(group['option'])) {
+              var icon = 'fa-credit-card';
+              var name = option['name'].toLowerCase();
+              if      (name.includes('paypal'))                       icon = 'fa-brands fa-paypal';
+              else if (name.includes('upi'))                          icon = 'fa-solid fa-qrcode';
+              else if (name.includes('cod') || name.includes('cash')) icon = 'fa-solid fa-money-bill';
+              else if (name.includes('stripe'))                       icon = 'fa-brands fa-cc-stripe';
+              else if (name.includes('razorpay'))                     icon = 'fa-solid fa-bolt';
+              else if (name.includes('card'))                         icon = 'fa-regular fa-credit-card';
+
+              var activeClass = option['code'] === selectedCode ? 'active' : '';
+
+              html += `
+                <div class="col-12">
+                  <div class="card payment-option ${activeClass}" data-code="${option['code']}" data-name="${option['name']}">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center">
+                        <i class="${icon} text-primary fa-lg me-3"></i>
+                        <div>
+                          <div class="fw-bold">${option['name']}</div>
+                          ${option['description'] ? `<small class="text-muted">${option['description']}</small>` : ''}
+                        </div>
+                      </div>
+                      ${activeClass ? '<i class="fa fa-check-circle text-success fa-lg"></i>' : ''}
+                    </div>
+                  </div>
+                </div>`;
+            }
+          } else {
+            html += `<div class="alert alert-danger">${group['error']}</div>`;
+          }
+        }
+
+        html += `</div></div></div></div></div>`;
+        $('body').append(html);
+
+        var paymentModal = new bootstrap.Modal(document.getElementById('modal-payment'));
+        paymentModal.show();
+
+        $(document).off('click', '.payment-option').on('click', '.payment-option', function () {
+          if (isPaymentUpdating) return;
+
+          var card       = $(this);
+          var code       = card.data('code');
+          var label      = card.data('name') || card.find('.fw-bold').text().trim();
+          var cleanLabel = label.replace(/\s*\(.*?\)\s*/g, '').trim();
+
+          // Optimistic UI update
+          $('.payment-option').removeClass('active').find('.fa-check-circle').remove();
+          card.addClass('active').find('.card-body').append('<i class="fa fa-check-circle text-success fa-lg"></i>');
+
+          isPaymentUpdating = true;
+          if (paymentAjaxRequest) paymentAjaxRequest.abort();
+
+          // ── SINGLE ATOMIC CALL ────────────────────────────────
+          // Sends payment code + current GST localState together.
+          // Server writes both to session in one operation.
+          paymentAjaxRequest = saveCheckoutState(code, function (json) {
+            if (json && json['success']) {
+              localState.paymentCode = code;
+              localState.paymentName = label;
+
+              $('#input-payment-method').val(json['payment_name'] || label);
+              $('#input-payment-code').val(json['payment_code']   || code);
+              $('#selected-payment-label').text(cleanLabel);
+              $('#button-choose-payment').removeClass('btn-primary').addClass('btn-outline-primary');
+
+              // Sync GST badge from server response (source of truth)
+              if (json['is_active'] && json['current_session_gst']) {
+                $('#gst-active-badge').removeClass('bg-secondary').addClass('bg-success').text('Active');
+                localState.useGst    = true;
+                localState.gstNumber = json['current_session_gst'];
+              } else {
+                $('#gst-active-badge').removeClass('bg-success').addClass('bg-secondary').text('Inactive');
+                localState.useGst = false;
+              }
+
+              paymentModal.hide();
+              reloadConfirm();
+            }
+
+            isPaymentUpdating = false;
+          });
+        });
+      }
+    });
+  });
+
+  /* ============================================================
+     saveCheckoutState — shared helper
+     Sends payment + GST to the single atomic endpoint.
+     Returns the jqXHR so callers can abort if needed.
+  ============================================================ */
+  function saveCheckoutState(paymentCode, callback) {
+    return $.ajax({
+      url      : 'index.php?route=checkout/payment_method.saveCheckoutState&language={{ language|e('js') }}',
+      type     : 'post',
+      dataType : 'json',
+      data     : {
+        payment_method : paymentCode,
+        gst_number     : localState.gstNumber,
+        use_gst        : localState.useGst ? 1 : 0
+      },
+      success: function (json) {
+        if (json['error']) {
+          $('#error-payment-method').html(json['error']).addClass('d-block');
+        }
+        if (typeof callback === 'function') callback(json);
+      },
+      error: function () {
+        $('#error-payment-method').html('Connection failed. Please try again.').addClass('d-block');
+        if (typeof callback === 'function') callback(null);
+      }
+    });
+  }
+
+  /* ============================================================
+     COMMENT — auto-save with debounce (no session conflict risk)
+  ============================================================ */
+  var commentTimer = null;
+
+  $('#input-comment').on('keydown', function () {
+    $('#button-confirm').prop('disabled', true);
+    clearTimeout(commentTimer);
+    commentTimer = setTimeout(function () {
+      $.ajax({
+        url     : 'index.php?route=checkout/payment_method.comment&language={{ language|e('js') }}',
+        type    : 'post',
+        dataType: 'json',
+        data    : $('#input-comment').serialize(),
+        success : function () { $('#button-confirm').prop('disabled', false); }
+      });
+    }, 1000);
+  });
+
+  /* ============================================================
+     AGREE TERMS
+  ============================================================ */
+  $('#input-checkout-agree').on('change', function () {
+    $('#button-confirm').prop('disabled', true);
+    $.ajax({
+      url     : 'index.php?route=checkout/payment_method.agree&language={{ language|e('js') }}',
+      type    : 'post',
+      data    : $('#input-checkout-agree').serialize(),
+      complete: function () { reloadConfirm(); }
+    });
+  });
+
+});
+</script>

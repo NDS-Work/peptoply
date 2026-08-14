@@ -1,0 +1,25 @@
+<fieldset>
+  <legend>Shipping<span class="d-none fs-6 fw-semibold">(get free shipiing on orders over ₹50,000 )</span></legend>
+  
+
+  {% if shipping_method %}
+    <div class="card border-primary shadow-sm mb-3">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <i class="fa fa-truck fa-lg text-primary me-2"></i>
+          <span class="fw-bold">{{ shipping_method }}</span>
+        </div>
+        <div class="text-end">
+          <span class="fw-bold text-success">{{ shipping_cost }}</span>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-warning">
+      {{ text_no_shipping }}
+    </div>
+  {% endif %}
+
+  <input type="hidden" name="shipping_method" value="{{ shipping_method }}" id="input-shipping-method"/>
+  <input type="hidden" name="code" value="{{ code }}" id="input-shipping-code"/>
+</fieldset>

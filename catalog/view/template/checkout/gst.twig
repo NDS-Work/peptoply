@@ -1,0 +1,169 @@
+<fieldset id="gst-section" class="mb-3">
+  <div class="d-flex align-items-center justify-content-between border rounded p-3 bg-light">
+    <div>
+      <strong id="gst-display">{{ gst_number ?: 'No GST added' }}</strong>
+      <span id="gst-active-badge" class="badge {{ use_gst and gst_number ? 'bg-success' : 'bg-secondary' }}">{{ use_gst and gst_number ? 'Active' : 'Inactive' }}</span>
+    </div>
+    <button type="button" id="btn-open-gst-modal" class="btn btn-sm btn-outline-primary">
+      {{ gst_number ? 'Edit/Remove GST' : 'Add GST' }}
+    </button>
+  </div>
+</fieldset>
+
+<div class="modal fade" id="modal-gst" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">GST Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+            <label class="form-label fw-bold">GST Number</label>
+            <input type="text" id="modal-gst-input" class="form-control" placeholder="GST Number" value="{{ gst_number }}">
+        </div>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="modal-checkbox-use-gst" {{ use_gst ? 'checked' : '' }}>
+          <label class="form-check-label" for="modal-checkbox-use-gst">Use this GST</label>
+        </div>
+        <div id="modal-gst-msg" class="mt-2 small"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="modal-save-gst" class="btn btn-primary w-100">Save & Sync</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Initialize the Bootstrap Modal properly
+    const gstModalEl = document.getElementById('modal-gst');
+    const gstModal = new bootstrap.Modal(gstModalEl);
+    const languageCode = '{{ language|e('js') }}';
+    const confirmUrl = `index.php?route=checkout/confirm.confirm&language=${languageCode}`;
+    const confirmButtonSelector = '#button-confirm';
+
+    const disableConfirmButton = () => {
+        const $btn = $(confirmButtonSelector);
+        if ($btn.length) {
+            $btn.prop('disabled', true);
+        }
+    };
+
+    const enableConfirmButton = () => {
+        const $btn = $(confirmButtonSelector);
+        if ($btn.length) {
+            $btn.prop('disabled', false);
+        }
+    };
+
+    const refreshConfirm = () => {
+        $('#checkout-confirm').load(confirmUrl, function() {
+            enableConfirmButton();
+        });
+    };
+
+    const initializeCheckoutGstState = (number, use) => {
+        window.checkoutGstState = {
+            number: number || '',
+            use: Boolean(use)
+        };
+    };
+initializeCheckoutGstState(
+    '{{ gst_number|e('js') }}',
+    {{ gst_number is not empty ? 'true' : 'false' }}
+);
+
+    window.syncCheckoutGstState = function() {
+        if (!window.checkoutGstState) {
+            return $.Deferred().resolve();
+        }
+
+        return $.ajax({
+            url: 'index.php?route=checkout/gst.save',
+            type: 'post',
+            data: {
+                gst_number: window.checkoutGstState.number,
+                use_gst: window.checkoutGstState.use ? 1 : 0
+            },
+            dataType: 'json'
+        });
+    };
+
+    // 1. Toggle input field state based on checkbox
+$(document).on('change', '#modal-checkbox-use-gst', function() {
+    const isChecked = $(this).is(':checked');
+    if (isChecked) {
+        $('#modal-gst-input').focus();
+    }
+});
+
+    // 2. OPEN MODAL (Using delegated event so it never fails)
+    $(document).on('click', '#btn-open-gst-modal', function(e) {
+        e.preventDefault();
+        
+        // Clear old messages
+        $('#modal-gst-msg').text('').removeClass('text-danger text-success');
+        
+        // Open the modal
+        gstModal.show();
+    });
+
+    // 3. SAVE & SYNC WITH SESSION
+    $(document).on('click', '#modal-save-gst', function() {
+        const $btn = $(this);
+        const postData = {
+            action: 'save', // Matches your controller logic
+            gst_number: $('#modal-gst-input').val().trim(),
+            use_gst: $('#modal-checkbox-use-gst').is(':checked') ? 1 : 0
+        };
+
+        $.ajax({
+            url: 'index.php?route=checkout/gst.save',
+            type: 'post',
+            data: postData,
+            dataType: 'json',
+            beforeSend: function() {
+                $btn.prop('disabled', true).text('Syncing...');
+                disableConfirmButton();
+            },
+            success: function(json) {
+                if (json.error) {
+                    $('#modal-gst-msg').text(json.error).addClass('text-danger');
+                    return;
+                }
+
+                const isActive = json.is_active;
+                const displayValue = isActive ? json.current_session_gst : json.db_gst;
+
+                $('#gst-display').text(displayValue || 'No GST added');
+                $('#modal-gst-input').val(displayValue);
+                $('#btn-open-gst-modal').text(displayValue ? 'Edit/Remove GST' : 'Add GST');
+
+if (isActive && displayValue !== '') {
+    $('#gst-active-badge').removeClass('d-none bg-secondary').addClass('bg-success').text('Active');
+    $('#modal-checkbox-use-gst').prop('checked', true);
+} else {
+    $('#gst-active-badge').removeClass('bg-success').addClass('bg-secondary').text('Inactive');
+    $('#modal-checkbox-use-gst').prop('checked', false);
+}
+
+                gstModal.hide();
+                refreshConfirm();
+                window.checkoutGstState = {
+                    number: displayValue,
+                    use: isActive && displayValue !== ''
+                };
+            },
+            error: function() {
+                $('#modal-gst-msg').text('Connection failed.').addClass('text-danger');
+            },
+            complete: function() {
+                $btn.prop('disabled', false).text('Save & Sync');
+                enableConfirmButton();
+            }
+        });
+    });
+});
+</script>

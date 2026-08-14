@@ -1,0 +1,72 @@
+<div class="input-group">
+  <section id="section-coupon" class="form-control" style="min-height: 64px;">
+    <div class="lead">
+      <strong>{{ text_coupon }}</strong>
+      <br/>
+      <div id="output-coupon">{{ coupon }}</div>
+    </div>
+  </section>
+  <button type="button" data-bs-toggle="modal" data-bs-target="#modal-coupon" class="btn btn-outline-primary"><i class="fa-solid fa-cog"></i></button>
+</div>
+<div id="modal-coupon" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ text_coupon }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-coupon" data-oc-target="section-coupon">
+          <div class="mb-3">
+            <label for="input-coupon" class="form-label">{{ entry_coupon }}</label>
+            <input type="text" name="coupon" value="{{ coupon }}" placeholder="{{ entry_coupon }}" id="input-coupon" class="form-control"/>
+          </div>
+          <div class="text-end">
+            <button type="submit" id="button-coupon" class="btn btn-primary"><i class="fa-solid fa-check"></i> {{ button_continue }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+$('#form-coupon').on('submit', function(e) {
+    e.preventDefault(); // Prevent normal form submission
+
+    // Get the button that triggered the submit
+    var button = e.originalEvent.submitter; 
+    var url = $(button).attr('formaction'); // dynamic URL
+
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: $(this).serialize(),
+        dataType: 'json',
+        beforeSend: function() {
+            $(button).prop('disabled', true);
+        },
+        complete: function() {
+            $(button).prop('disabled', false);
+        },
+        success: function(json) {
+            console.log(json);
+
+            $('.alert-dismissible').remove();
+
+            if (json['error']) {
+                $('#form-coupon').prepend('<div class="alert alert-danger alert-dismissible">' + json['error'] + '</div>');
+            }
+
+            if (json['success']) {
+                $('#form-coupon').prepend('<div class="alert alert-success alert-dismissible">' + json['success'] + '</div>');
+                $('#shopping-cart').load('index.php?route=checkout/cart.list&language=en-gb'); // refresh cart
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+
+
+//--></script>

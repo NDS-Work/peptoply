@@ -1,0 +1,36 @@
+{{ header }}
+<div class="container" style="text-align:center; padding:50px;">
+    <h1>{{ heading_title }}</h1>
+
+    <p>{{ text_message }}</p>
+
+    {% if order_id %}
+        <p><strong>Order ID:</strong> {{ order_id }}</p>
+        <p><strong>Order Total:</strong> {{ order_total }}</p>
+        <p><strong>Order Date:</strong> {{ order_date }}</p>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        <a href="{{ url_account_orders }}" class="btn btn-primary" style="margin-right:10px;">View My Orders</a>
+        <a href="{{ continue }}" class="btn btn-secondary">Go to Home</a>
+    </div>
+
+    <p id="redirect-msg" style="margin-top: 15px;">
+        You will be redirected to Home in <span id="countdown">10</span> seconds.
+    </p>
+</div>
+
+<script>
+    let countdown = 10;
+    const countdownEl = document.getElementById('countdown');
+
+    const interval = setInterval(() => {
+        countdown--;
+        countdownEl.textContent = countdown;
+        if (countdown <= 0) {
+            clearInterval(interval);
+            window.location.href = "{{ continue }}";
+        }
+    }, 1000);
+</script>
+{{ footer }}

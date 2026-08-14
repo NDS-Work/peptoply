@@ -1,0 +1,22 @@
+# Secrets / database credentials
+config.php
+dashboard/config.php
+.env
+
+# Logs
+error_log
+*.log
+
+# System files
+.DS_Store
+
+# Runtime/cache files
+storage001/cache/
+storage001/logs/
+storage001/session/
+storage001/modification/
+
+# Old/backups
+old/
+storage.zip
+.well-known/

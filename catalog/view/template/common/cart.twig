@@ -1,0 +1,10 @@
+  <!-- Cart Icon with Badge -->
+    <a href="{{ cart_url }}" title="Shopping Cart" class="cart-icon position-relative">
+      <i class="fa-solid fa-cart-shopping fa-lg"></i>
+      {% if text_items > 0 %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-cart">
+          <span id="cart-total">{{ text_items }}</span>
+          <span class="visually-hidden">items in cart</span>
+        </span>
+      {% endif %}
+    </a>

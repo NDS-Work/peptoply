@@ -1,0 +1,45 @@
+{# 1. Check if the product is MR or BWP using data from the controller #}
+{% set is_mr = false %}
+{% if 'MR' in model|upper or 'MR' in heading_title|upper %}
+  {% set is_mr = true %}
+{% endif %}
+
+{# 2. Define features dynamically #}
+{% if is_mr %}
+  {# MR Product Features #}
+  {% set features = [
+    { 'title': 'Water Resistant', 'icon': 'image/catalog/peptoply/features/feature-icon-1.png' },
+    { 'title': 'IS 303 Grade', 'icon': 'image/catalog/peptoply/features/feature-icon-2.png' },
+    { 'title': 'Suitable for Interiors', 'icon': 'image/catalog/peptoply/features/feature-icon-3.png' },
+    { 'title': '8 year termite warranty', 'icon': 'image/catalog/peptoply/features/feature-icon-4.png' },
+    { 'title': 'Protected from Duplicity', 'icon': 'image/catalog/peptoply/features/feature-icon-5.png' },
+    { 'title': 'Delivery in 24 working hours', 'icon': 'image/catalog/peptoply/features/feature-icon-6.png' },
+    { 'title': 'We sell Direct', 'icon': 'image/catalog/peptoply/features/feature-icon-7.png' }
+  ] %}
+{% else %}
+  {# Default / BWP Product Features #}
+  {% set features = [
+    { 'title': 'Boiling Waterproof', 'icon': 'image/catalog/peptoply/features/feature-icon-1.png' },
+    { 'title': 'IS 710 Grade', 'icon': 'image/catalog/peptoply/features/feature-icon-2.png' },
+    { 'title': 'Suitable for Interiors and Exteriors', 'icon': 'image/catalog/peptoply/features/feature-icon-3.png' },
+    { 'title': '20 year termite warranty', 'icon': 'image/catalog/peptoply/features/feature-icon-4.png' },
+    { 'title': 'Protected from Duplicity', 'icon': 'image/catalog/peptoply/features/feature-icon-5.png' },
+    { 'title': 'Delivery in 24 working hours', 'icon': 'image/catalog/peptoply/features/feature-icon-6.png' },
+    { 'title': 'We sell Direct', 'icon': 'image/catalog/peptoply/features/feature-icon-7.png' }
+  ] %}
+{% endif %}
+
+<section class="peptoply-product-feature-section">
+  <div class="container">
+    {# Displaying the specific product title from the controller #}
+    <h2 class="peptoply-title mb-5">Features of {{ heading_title }}</h2>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-7 text-center g-4">
+      {% for feature in features %}
+        <div class="col">
+          <img src="{{ base }}{{ feature.icon }}" alt="{{ feature.title }}" class="img-fluid mb-2">
+          <h3 class="peptoply-dark-heading">{{ feature.title }}</h3>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
